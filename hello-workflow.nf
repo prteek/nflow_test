@@ -1,3 +1,5 @@
+#!/usr/bin/env nextflow
+
 include { sayHello } from './say_hello.nf'
 
 process convertToUpper {
@@ -33,6 +35,7 @@ process collectGreetings {
 parameter
 */
 params.greeting = 'greetings.csv'
+params.greeting_list = ['Hello', 'Hola', 'Bonjour', 'Ciao', 'Hallo']
 workflow {
     greetings_ch = channel.fromPath(params.greeting)
         .splitCsv()
@@ -40,7 +43,9 @@ workflow {
     // get the first column (greeting) — use Groovy closure syntax
 
     // emit a greeting
-    sayHello(greetings_ch)
+    greetings_list_ch = channel.of(params.greeting_list).flatten()
+
+    sayHello(greetings_list_ch)
 
     convertToUpper(sayHello.out)
 
