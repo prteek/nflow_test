@@ -3,8 +3,6 @@
 params.str = 'Hello world!'
 
 process splitLetters {
-    container 'iprtk/nflow-test:latest'
-
     input:
     val str
 
@@ -18,8 +16,6 @@ process splitLetters {
 }
 
 process convertToUpperX {
-    container 'iprtk/nflow-test:latest'
-
     input:
     file x
 
