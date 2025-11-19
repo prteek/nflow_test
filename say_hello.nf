@@ -9,6 +9,6 @@ process sayHello {
 
     script:
     """
-    python -c  "print('${greeting}')" > '${greeting}-output.txt'
+    echo '${greeting}' > '${greeting}-output.txt'
     """
 }
