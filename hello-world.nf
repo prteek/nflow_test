@@ -9,7 +9,7 @@ process sayHello {
     path 'output.txt'
 
     script:
-    "python ${scriptpath} > 'output.txt'"
+    "python3 ${scriptpath} > 'output.txt'"
 }
 
 params.greeting = 'namaste world'
