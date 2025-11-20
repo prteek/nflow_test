@@ -3,17 +3,17 @@ process sayHello {
 
     input:
     val greeting
+    path scriptpath
 
     output:
     path 'output.txt'
 
     script:
-    """
-    python -c  "print('${greeting}')" > output.txt
-    """
+    "python ${scriptpath} > 'output.txt'"
 }
 
 params.greeting = 'namaste world'
+params.filepath = 'script.py'
 workflow {
-    sayHello(params.greeting)
+    sayHello(params.greeting, file(params.filepath))
 }
