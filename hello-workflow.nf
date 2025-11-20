@@ -34,13 +34,8 @@ process collectGreetings {
 /* input
 parameter
 */
-params.greeting = 'greetings.csv'
 params.greeting_list = ['Hello', 'Hola', 'Bonjour', 'Ciao', 'Hallo']
 workflow {
-    greetings_ch = channel.fromPath(params.greeting)
-        .splitCsv()
-        .map { item -> item[0] }
-    // get the first column (greeting) — use Groovy closure syntax
 
     // emit a greeting
     greetings_list_ch = channel.of(params.greeting_list).flatten()
