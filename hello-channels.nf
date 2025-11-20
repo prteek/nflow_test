@@ -15,8 +15,8 @@ process sayHello {
 
 params.greeting = 'greetings.csv'
 workflow {
-    greetings_array = ['Hello', 'Hola', 'Bonjour', 'Namaste']
-    greeting_ch = channel.of(greetings_array).flatten().view { greeting -> "flattened greeting: ${greeting}" }
+    // greetings_array = ['Hello', 'Hola', 'Bonjour', 'Namaste']
+    // greeting_ch = channel.of(greetings_array).flatten().view { greeting -> "flattened greeting: ${greeting}" }
     greeting_file_ch = channel.fromPath(params.greeting)
         .splitCsv()
         .map { item -> item[0] }
