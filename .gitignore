@@ -2,5 +2,4 @@
 work/
 results/
 *.html
-*.csv
 *credentials
