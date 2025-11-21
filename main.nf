@@ -1,38 +1,61 @@
 #!/usr/bin/env nextflow
 
-params.str = 'Hello world!'
+process build {
+    container null
 
-process splitLetters {
     input:
-    val str
-
-    output:
-    file 'chunk_*'
+    val DOCKERFILEPATH
+    val IMAGE
 
     script:
     """
-    printf '${str}' | split -b 6 - chunk_
+    docker buildx build --platform linux/amd64 -t ${IMAGE} . -f ${DOCKERFILEPATH} --output type=docker
     """
 }
 
-process convertToUpperX {
-    input:
-    file x
+process push {
+    container null
 
-    output:
-    stdout
+    input:
+    val IMAGE
+    val IMAGE_URI
 
     script:
     """
-    cat ${x} | tr '[a-z]' '[A-Z]'
-
+    docker tag ${IMAGE} ${IMAGE_URI}
+    aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin ${IMAGE_URI}; docker push ${IMAGE_URI}
     """
 }
+
+process create_ecr_repo {
+    container null
+
+    input:
+    val ECR_REPO
+
+    script:
+    """
+    aws ecr create-repository --repository-name ${ECR_REPO} --region eu-west-1
+    """
+}
+
 
 workflow {
-    // create a channel from the parameter, call processes and view the result
-    str_ch = channel.value(params.str)
-    letters = splitLetters(str_ch)
-    result = convertToUpperX(letters.flatten())
-    result.view { x -> x.trim() }
+
+    IMAGE = "${params.ECR_REPO}:latest"
+    DOCKERFILEPATH = file(params.DOCKERFILE)
+
+    if (params.ops == 'build') {
+        build(DOCKERFILEPATH, IMAGE)
+    }
+    else if (params.ops == 'push') {
+        push(IMAGE, params.IMAGE_URI)
+    }
+    else if (params.ops == 'all') {
+        build(DOCKERFILEPATH, IMAGE)
+        push(IMAGE, params.IMAGE_URI)
+    }
+    else if (params.ops == 'create_ecr_repo') {
+        create_ecr_repo(params.ECR_REPO)
+    }
 }
